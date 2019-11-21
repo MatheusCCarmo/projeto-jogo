@@ -1,6 +1,8 @@
 let playerx = 320, playery = 240;
-let xprojecao = 0, yprojecao = 0;
+let xprojecao = Math.random()*800, yprojecao = 0;
 let level = 1;
+let direction = 1;
+let directionFlag = true;
 let movXRandom = (Math.random() - 0.5);
 let i = 0;
 let naveInimiga = {
@@ -19,15 +21,32 @@ $(document).ready(function() {
 	});
 
 	setInterval(gameLoop, 15);
+	setInterval(timer, 1000);
 	setInterval(resetEnemies, 7000);
 	
 });
 
-function resetEnemies(){
-	xprojecao = 0;
-	yprojecao = 0;
+let texto = "Tempo de jogo - 00:00";
+let minutos = "";
+let segundos = "";
+let tempoDeSessao = 0;
+
+function timer() {
+	tempoDeSessao++;
+	minutos = parseInt(tempoDeSessao / 60);
+	minutos =  minutos < 10 ? "0" + minutos : minutos;
+	segundos = (tempoDeSessao % 60) < 10 ? "0" + tempoDeSessao % 60 : tempoDeSessao % 60;
+	texto = "Tempo de jogo - " + minutos + ":" + segundos;
 }
 
+// Reseta naves inimigas
+function resetEnemies(){
+	xprojecao = Math.random()*800;
+	yprojecao = 0;
+	directionFlag = true;
+}
+
+// Renderiza as naves inimigas
 function enemyWave(){
 	waveSize = 5
 	if(level === 4){
@@ -36,16 +55,18 @@ function enemyWave(){
 	}
 	else{
 		for(i = 0; i < waveSize; i++){
-			naveInimiga.x -= 40;
-			naveInimiga.y -= 40;
+			naveInimiga.x -= 50*direction;
+			naveInimiga.y -= 50;
 			$("canvas").drawImage(naveInimiga);
 		}
 	}
 }
 
+// Renderiza todo canvas
 function renderScene() {
 
-	$("canvas").clearCanvas();
+	// Limpa tela
+	$("canvas").clearCanvas(); 
 
 	$("canvas").drawRect({
 		fillStyle: "#000",
@@ -55,6 +76,16 @@ function renderScene() {
 		height: 600
 	});
 
+	// Desenha o plano de fundo
+	$("canvas").drawImage({
+		source: 'paginaBG2.jpg',
+		x: 400,
+		y: 300,
+		width: $("canvas").width(),
+		height: $("canvas").height()
+	});
+
+	// Desenha o personagem principal
 	$("canvas").drawImage({
 		source: 'sprites/naveMC.png',
 		x: playerx,
@@ -63,9 +94,22 @@ function renderScene() {
 		height: 80
 	});
 
+	// Chama função que renderiza a onda inimiga
 	enemyWave();
+
+	// Renderiza a contagem de tempo
+	$("canvas").drawText({
+		fillStyle: "#FFF",
+		x: ($("canvas").width()/2), 
+		y: 20,
+		fontSize: 20,
+		fontFamily: 'Arial',
+		text: texto
+	});
+	
 }
 
+// Atuliza os atributos
 function updateGame(){
 	switch(level){
 		case(1):
@@ -76,7 +120,11 @@ function updateGame(){
 				width: 80,
 				height: 80
 			}
-			xprojecao += 1.8;
+			if(directionFlag){
+				direction = enemyDirection(naveInimiga.x, naveInimiga.y);
+				directionFlag = false;
+			}
+			xprojecao += 1.8*direction;
 			yprojecao += 1.8;
 			break;
 		case(2):
@@ -87,7 +135,11 @@ function updateGame(){
 				width: 80,
 				height: 80
 			}
-			xprojecao += 2.4;
+			if(directionFlag){
+				direction = enemyDirection(naveInimiga.x, naveInimiga.y);
+				directionFlag = false;
+			}
+			xprojecao += 2.4*direction;
 			yprojecao += 2.4;
 			break;
 		case(3):
@@ -98,7 +150,11 @@ function updateGame(){
 				width: 80,
 				height: 80
 			}
-			xprojecao += 3;
+			if(directionFlag){
+				direction = enemyDirection(naveInimiga.x, naveInimiga.y);
+				directionFlag = false;
+			}
+			xprojecao += 3*direction;
 			yprojecao += 3;
 			break;
 		case(4):
@@ -110,6 +166,14 @@ function updateGame(){
 				height: 360
 			}
 			xprojecao += movXRandom * 3.5;
+	}
+}
+
+function enemyDirection(x,y){
+	if((x > 400) && (y < 10)){
+		return -1;
+	}else{
+		return 1;
 	}
 }
 
