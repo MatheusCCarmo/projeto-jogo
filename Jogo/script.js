@@ -5,13 +5,7 @@ let direction = 1;
 let directionFlag = true;
 let movXRandom = (Math.random() - 0.5);
 let i = 0;
-let naveInimiga = {
-	source: "sprites/naveInimiga"+level+".png",
-	x: 0,
-	y: 0,
-	width: 80,
-	height: 80
-}
+let naveInimiga;
 
 $(document).ready(function() {
 	$("canvas").css("cursor", "none");
@@ -121,7 +115,7 @@ function updateGame(){
 				height: 80
 			}
 			if(directionFlag){
-				direction = enemyDirection(naveInimiga.x, naveInimiga.y);
+				direction = enemyDirection(naveInimiga.x);
 				directionFlag = false;
 			}
 			xprojecao += 1.8*direction;
@@ -136,7 +130,7 @@ function updateGame(){
 				height: 80
 			}
 			if(directionFlag){
-				direction = enemyDirection(naveInimiga.x, naveInimiga.y);
+				direction = enemyDirection(naveInimiga.x);
 				directionFlag = false;
 			}
 			xprojecao += 2.4*direction;
@@ -151,7 +145,7 @@ function updateGame(){
 				height: 80
 			}
 			if(directionFlag){
-				direction = enemyDirection(naveInimiga.x, naveInimiga.y);
+				direction = enemyDirection(naveInimiga.x);
 				directionFlag = false;
 			}
 			xprojecao += 3*direction;
@@ -169,8 +163,8 @@ function updateGame(){
 	}
 }
 
-function enemyDirection(x,y){
-	if((x > 400) && (y < 10)){
+function enemyDirection(x){
+	if(x > 400){
 		return -1;
 	}else{
 		return 1;
